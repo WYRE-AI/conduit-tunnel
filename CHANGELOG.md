@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- **`mssql`: per-connection legacy-TLS opt-ins** (WYREAI-542), so customers
+  with legacy SQL Servers never need `"encrypt":"disable"`. Both default off,
+  live only in that connection's pushed config (no env var, no `GODEBUG`), and
+  are rejected together with `"encrypt":"disable"`:
+  - `tlsServerCertSha256` — SHA-256 fingerprint of the server's leaf
+    certificate (hex, any case, optional `:`/space separators). Skips CA,
+    hostname and expiry verification and instead requires an exact match
+    (constant-time). Mismatch errors include the presented fingerprint.
+    Re-issuing the certificate breaks the connection until the pin is updated.
+  - `tlsAllowLegacyProtocols` — allows TLS 1.0/1.1 and the RSA key-exchange
+    suites `TLS_RSA_WITH_AES_{128,256}_CBC_SHA` and
+    `TLS_RSA_WITH_AES_{128,256}_GCM_SHA{256,384}` on top of Go's defaults. 3DES
+    and RC4 stay disabled.
+  - A warning is logged when a connector is created with either switch on.
+  - Older binaries silently ignore these fields, so the connection keeps
+    failing (fail-closed).
+
 ## [0.4.0] - 2026-07-24
 
 ### Changed
