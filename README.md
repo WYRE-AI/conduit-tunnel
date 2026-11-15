@@ -6,18 +6,18 @@ WSS and bridges on-prem systems (Sage 100/MSSQL, Veeam, …) into
 outbound 443 works, the site is connected. No firewall holes, ever.
 
 **Build contract:** `docs/onprem-connector-v1.md` in the
-[conduit](https://github.com/wyre-technology/conduit) repo. This repo is the Go
+[conduit](https://github.com/WYRE-AI/conduit) repo. This repo is the Go
 agent named there (milestone M-B onward).
 
 ## Install (Linux)
 
-`install.sh` downloads the binary from the latest [GitHub release](https://github.com/wyre-technology/conduit-tunnel/releases/latest),
+`install.sh` downloads the binary from the latest [GitHub release](https://github.com/WYRE-AI/conduit-tunnel/releases/latest),
 installs it as a hardened systemd service, and starts it. It reads its two
 settings from the environment, so an RMM can set site variables and run it
 unattended:
 
 ```
-curl -fsSL https://raw.githubusercontent.com/wyre-technology/conduit-tunnel/main/install.sh | \
+curl -fsSL https://raw.githubusercontent.com/WYRE-AI/conduit-tunnel/main/install.sh | \
   RELAY_URL=wss://conduit-wss.wyre.ai \
   ENROLLMENT_TOKEN=<mint in Conduit: site → Deploy connector> \
   bash
@@ -31,7 +31,7 @@ Signing); a Windows service wrapper is the M-E follow-up.
 ## Install (Windows)
 
 `install.ps1` is the Windows counterpart of `install.sh`: it downloads the
-signed `conduit-tunnel-windows-amd64.exe` from the latest [GitHub release](https://github.com/wyre-technology/conduit-tunnel/releases/latest),
+signed `conduit-tunnel-windows-amd64.exe` from the latest [GitHub release](https://github.com/WYRE-AI/conduit-tunnel/releases/latest),
 installs it to `C:\Program Files\conduit-tunnel\`, registers a
 `conduit-tunnel` service (auto-start, restart-on-failure), and starts it.
 Run it from an **elevated** PowerShell:
@@ -45,7 +45,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 `
 Or fetch-and-run in one line:
 
 ```
-powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/wyre-technology/conduit-tunnel/main/install.ps1 -OutFile $env:TEMP\install.ps1; & $env:TEMP\install.ps1 -RelayUrl wss://conduit-wss.wyre.ai -EnrollmentToken <mint in Conduit>"
+powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/WYRE-AI/conduit-tunnel/main/install.ps1 -OutFile $env:TEMP\install.ps1; & $env:TEMP\install.ps1 -RelayUrl wss://conduit-wss.wyre.ai -EnrollmentToken <mint in Conduit>"
 ```
 
 The `.exe` is **Authenticode-signed** (Azure Artifact Signing; subject

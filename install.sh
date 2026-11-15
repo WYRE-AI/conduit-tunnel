@@ -23,7 +23,7 @@
 #
 set -euo pipefail
 
-REPO="wyre-technology/conduit-tunnel"
+REPO="WYRE-AI/conduit-tunnel"
 BIN_PATH="/usr/local/bin/conduit-tunnel"
 ENV_DIR="/etc/conduit-tunnel"
 UNIT_PATH="/etc/systemd/system/conduit-tunnel.service"
