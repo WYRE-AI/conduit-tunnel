@@ -89,6 +89,36 @@ Compiled in — no plugins, no sidecars. Enabled per-site via cloud-pushed confi
 The SQL connectors share `internal/connectors/sqlcommon` (one read-only MCP +
 query implementation; each driver package is just its DSN + placeholder style).
 
+### `mssql` and legacy SQL Servers
+
+Old SQL Servers often present a self-signed certificate and/or only speak
+TLS 1.0/1.1 with RSA key exchange. Rather than setting `"encrypt":"disable"`
+(which sends the SQL login — **password included — in cleartext**), opt in per
+connection in its config:
+
+```json
+{ "host": "10.0.0.5", "database": "SageDemo", "user": "...", "password": "...",
+  "tlsServerCertSha256": "AB:CD:...(64 hex chars)",
+  "tlsAllowLegacyProtocols": true }
+```
+
+| Field | Default | Effect |
+|---|---|---|
+| `tlsServerCertSha256` | unset | Pins the server's leaf certificate (SHA-256 of the DER; hex, any case, optional `:`/space separators). Replaces CA, hostname and expiry checks with an exact match. |
+| `tlsAllowLegacyProtocols` | `false` | Allows TLS 1.0/1.1 and RSA key-exchange suites (AES-CBC-SHA, AES-GCM). 3DES and RC4 remain off. |
+
+Both require encryption (rejected with `"encrypt":"disable"`) and apply only to
+the connection they are set on. Risks:
+
+- The pin skips CA, hostname and expiry checks but binds to exactly one
+  certificate, so **re-issuing the certificate breaks the connection until the
+  pin is updated**. A mismatch error shows the presented fingerprint.
+- TLS 1.0/1.1 and RSA key exchange have known weaknesses (no forward secrecy,
+  BEAST/POODLE-class CBC issues).
+- Both are still far safer than `encrypt=disable`.
+- Older `conduit-tunnel` binaries silently ignore these fields, so the
+  connection keeps failing (fail-closed) — safe, but upgrade first.
+
 ### Named instances (multiple connectors of one type)
 
 A connector's config key is its **slug** (the `slug__tool` prefix clients see).
